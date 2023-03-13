@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  app:
+    image: bibichannel/laravel:v1
+    restart: unless-stopped
+    volumes:
+      - ./${REPO_BRANCH}_${REPOSITORY_NAME}:/var/www/html
+    networks:
+      - backend_v2
+      - database
+
+
+  webserver:
+    image: nginx:1.23.3-alpine
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+    volumes:
+      - ./${REPO_BRANCH}_${REPOSITORY_NAME}:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - frontend
+      - backend_v2
+networks:
+  frontend:
+    name: frontend
+    driver: bridge
+  backend_v2:
+    name: backend_v2
+    driver: bridge
+  database:
+    name: database
+    driver: bridge
